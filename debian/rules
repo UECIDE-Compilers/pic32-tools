@@ -62,7 +62,7 @@ override_dh_auto_build:
 	wget -c -O ../../downloads/pic32-tools-${DEB_HOST_ARCH}-${VER}.tar.gz ${URL}
 	rm -rf build
 	mkdir -p build
-	tar -C build ../../downloads/pic32-tools-${DEB_HOST_ARCH}-${VER}.tar.gz
+	tar -C build -zxf ../../downloads/pic32-tools-${DEB_HOST_ARCH}-${VER}.tar.gz
 
 override_dh_auto_clean:
 	rm -rf build
@@ -70,4 +70,4 @@ override_dh_auto_clean:
 override_dh_auto_install:
 	mkdir -p debian/pic32-tools/compilers/
 	cp -RL build/pic32-tools debian/pic32-tools/compilers/
-	cp debian/uecide/compiler.txt debian/pic32-tools/compilers/picto-tools/
+	cp debian/uecide/compiler.txt debian/pic32-tools/compilers/pic32-tools/
