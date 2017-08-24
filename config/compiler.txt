@@ -2,21 +2,29 @@ name=pic32-tools
 family=pic32
 version=20140530
 revision=3
-description=PIC32 Compiler for MX and MZ version 4.8.3
+description=PIC32 Compiler version 1.43
 compiler.smalldata=1024
 
 optimize=${option:optimize.flag}
 warnings=
 extra.flags=
 
-#cflags=${optimize}::-mno-gpopt::-G${compiler.smalldata}::-g::${warnings}::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double::${extra.flags}
-#cppflags=${optimize}::-mno-gpopt::-G${compiler.smalldata}::-g::${warnings}::-fno-exceptions::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double::${extra.flags}
-#ldflags=${optimize}::-mno-gpopt::-G${compiler.smalldata}::-Wl,--gc-sections,-Map,${build.path}/${filename}.map::-mdebugger::-mno-peripheral-libs::-nostartfiles::${extra.flags}
+compiler.cflags=-G${compiler.smalldata}::-g::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double
+compiler.cppflags=-G${compiler.smalldata}::-g::-fno-exceptions::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double
+compiler.ldflags=-G${compiler.smalldata}::-Wl,--gc-sections,-Map,${build.path}/${filename}.map::-mdebugger::-mno-peripheral-libs::-nostartfiles
+compiler.asflags=-g1::-Wa,--gdwarf-2
 
-cflags=${optimize}::-G${compiler.smalldata}::-g::${warnings}::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double::${extra.flags}
-cppflags=${optimize}::-G${compiler.smalldata}::-g::${warnings}::-fno-exceptions::-ffunction-sections::-fdata-sections::-mno-smart-io::-mdebugger::-Wcast-align::-fno-short-double::${extra.flags}
-ldflags=${optimize}::-G${compiler.smalldata}::-Wl,--gc-sections,-Map,${build.path}/${filename}.map::-mdebugger::-mno-peripheral-libs::-nostartfiles::${extra.flags}
-asflags=${optimize}::-g1::-Wa,--gdwarf-2::${warnings}::${extra.flags}
+# Global compilation parameters for all programs
+flags=-mprocessor=${build.mcu}::${optimize}::${warnings}::${compiler.flags}::${core.flags}::${board.flags}::${sketch.flags}::${extra.flags}
+
+# Compilation parameters for .c, .cpp and .S
+cflags=${flags}::${compiler.cflags}::${core.cflags}::${board.cflags}::${sketch.cflags}::${option.cflags}
+cppflags=${flags}::${compiler.cppflags}::${core.cppflags}::${board.cppflags}::${sketch.cppflags}::${option.cppflags}
+asflags=${flags}::${compiler.asflags}::${core.asflags}::${board.asflags}::${sketch.asflags}::${option.asflags}
+
+# Linking parameters
+ldflags=${flags}::${compiler.ldflags}::${core.ldflags}::${board.ldflags}::${sketch.ldflags}::${option.flags}
+
 
 gcc=${compiler:root}/bin/pic32-gcc
 gpp=${compiler:root}/bin/pic32-g++
@@ -26,18 +34,14 @@ objdump=${compiler:root}/bin/pic32-objdump
 size=${compiler:root}/bin/pic32-size
 binhex=${compiler:root}/bin/pic32-bin2hex
 
-compile.preproc=${gpp}::-c::${source.name}::-o::${object.name}::-M::-MG::-mprocessor=${build.mcu}::${cppflags}::${core.flags}::${board.flags}::${includes}::${option.flags}::${option.cppflags}::-w
+compile.preproc=${gpp}::-c::${source.name}::-o::${object.name}::-M::-MG::${cppflags}::${includes}::-w
 
 
-compile.c=${gcc}::-c::${source.name}::-o::${object.name}::-mprocessor=${build.mcu}::${cflags}::${core.flags}::${board.flags}::${includes}::${option.flags}::${option.cflags}
-compile.cpp=${gpp}::-c::${source.name}::-o::${object.name}::-mprocessor=${build.mcu}::${cppflags}::${core.flags}::${board.flags}::${includes}::${option.flags}::${option.cppflags}
-
-compile.S=${gpp}::${asflags}::-c::${source.name}::-o::${object.name}::-mprocessor=${build.mcu}::${core.flags}::${board.flags}::${includes}::${option.flags}::${option.cflags}
-
+compile.c=${gcc}::-c::${source.name}::-o::${object.name}::${cflags}::${includes}
+compile.cpp=${gpp}::-c::${source.name}::-o::${object.name}::${cppflags}::${includes}
+compile.S=${gpp}::${asflags}::-c::${source.name}::-o::${object.name}::${includes}
 compile.ar=${ar}::rcs::${library}::${object.name}
-compile.eep=${objcopy}::-O::ihex::-j::.eeprom::--set-section-flags=.eeprom=alloc,load::--no-change-warnings::--change-section-lma::.eeprom=0::${build.path}/${filename}.elf::${build.path}/${filename}.eep
-compile.hex=${binhex}::-a::${build.path}/${filename}.elf
-compile.lss=${objdump}::-h::-S::${build.path}/${filename}.elf
+compile.link=${gpp}::${ldflags}::-o::${build.path}/${filename}.elf::${object.filelist}::-L${build.path}::-L${libraries.path}::-Wl,--start-group::${libraries}::-Wl,--end-group::-lm::${extra.libs}
 
 # Files to automatically generate from the elf file once built
 compile.autogen.lss=__builtin_stdin::${build.path}/${filename}.lss::${objdump}::-h::-S::${build.path}/${filename}.elf
@@ -46,7 +50,6 @@ compile.autogen.etx=__builtin_stdin::${build.path}/${filename}.etx::${objdump}::
 compile.autogen.eep=${objcopy}::-O::ihex::-j::.eeprom::--set-section-flags=.eeprom=alloc,load::--no-change-warnings::--change-section-lma::.eeprom=0::${build.path}/${filename}.elf::${build.path}/${filename}.eep
 
 
-compile.link=${gpp}::${ldflags}::${core.ldflags}::${board.ldflags}::${option.flags}::${option.ldflags}::-mprocessor=${build.mcu}::-o::${build.path}/${filename}.elf::${object.filelist}::-L${build.path}::-L${libraries.path}::-Wl,--start-group::${libraries}::-Wl,--end-group::-lm::${extra.libs}
 compile.size=${size}::-S::${build.path}/${filename}.elf
 #compiler.size.text=0
 #compiler.size.rodata=1
@@ -77,3 +80,13 @@ options.optimize.size.name=Smallest size
 options.optimize.size.flag=-Os
 options.optimize.speed.name=Fastest execution
 options.optimize.speed.flag=-O3
+
+options.isa.name=ISA
+options.isa.default=mips32
+options.isa.purge=true
+options.isa.mips32.name=MIPS32
+options.isa.mips32.flags=-mips32r2
+options.isa.mips16.name=MIPS16
+options.isa.mips16.flags=-mips16
+options.isa.micromips.name=microMIPS
+options.isa.micromips.flags=-mmicromips
