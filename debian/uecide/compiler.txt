@@ -48,11 +48,12 @@ compile.autogen.eep=${objcopy}::-O::ihex::-j::.eeprom::--set-section-flags=.eepr
 
 compile.link=${gpp}::${ldflags}::${core.ldflags}::${board.ldflags}::${option.flags}::${option.ldflags}::-mprocessor=${build.mcu}::-o::${build.path}/${filename}.elf::${object.filelist}::-L${build.path}::-L${libraries.path}::-Wl,--start-group::${libraries}::-Wl,--end-group::-lm::${extra.libs}
 compile.size=${size}::-S::${build.path}/${filename}.elf
-#compiler.size.text=0
-#compiler.size.rodata=1
-#compiler.size.data=2
-#compiler.size.bss=3
-#compiler.size.regex=^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)
+compiler.size.text=1
+compiler.size.rodata=0
+compiler.size.data=2
+compiler.size.bss=3
+compiler.size.regex=^\s*(\d+)\s+(\d+)\s+(\d+)\s+(\d+)
+
 
 compile.bin=${objcopy}::--input-target::binary::--output-target::elf32-tradlittlemips::--binary-architecture::mips::--rename-section::.data=.text,alloc,load,readonly,code,share,contents::${source.name}::${object.name}
 
