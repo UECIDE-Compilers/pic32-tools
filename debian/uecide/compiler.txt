@@ -34,7 +34,8 @@ objdump=${compiler:root}/bin/pic32-objdump
 size=${compiler:root}/bin/pic32-size
 binhex=${compiler:root}/bin/pic32-bin2hex
 
-compile.preproc=${gpp}::-c::${source.name}::-o::${object.name}::-M::-MG::${cppflags}::${includes}::-w
+### Causes some libraries (ugfx) to fail in Windows ###
+#compile.preproc=${gpp}::-c::${source.name}::-o::${object.name}::-M::-MG::${cppflags}::${includes}::-w
 
 
 compile.c=${gcc}::-c::${source.name}::-o::${object.name}::${cflags}::${includes}
