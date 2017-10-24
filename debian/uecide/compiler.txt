@@ -15,7 +15,7 @@ compiler.ldflags=-G${compiler.smalldata}::-Wl,--gc-sections,-Map,${build.path}/$
 compiler.asflags=-g1::-Wa,--gdwarf-2
 
 # Global compilation parameters for all programs
-flags=-mprocessor=${build.mcu}::${optimize}::${warnings}::${compiler.flags}::${core.flags}::${board.flags}::${sketch.flags}::${extra.flags}
+flags=-mprocessor=${build.mcu}::${optimize}::${warnings}::${compiler.flags}::${core.flags}::${board.flags}::${sketch.flags}::${extra.flags}::${option.flags}
 
 # Compilation parameters for .c, .cpp and .S
 cflags=${flags}::${compiler.cflags}::${core.cflags}::${board.cflags}::${sketch.cflags}::${option.cflags}
@@ -23,7 +23,7 @@ cppflags=${flags}::${compiler.cppflags}::${core.cppflags}::${board.cppflags}::${
 asflags=${flags}::${compiler.asflags}::${core.asflags}::${board.asflags}::${sketch.asflags}::${option.asflags}
 
 # Linking parameters
-ldflags=${flags}::${compiler.ldflags}::${core.ldflags}::${board.ldflags}::${sketch.ldflags}::${option.flags}
+ldflags=${flags}::${compiler.ldflags}::${core.ldflags}::${board.ldflags}::${sketch.ldflags}::${option.ldflags}
 
 
 gcc=${compiler:root}/bin/pic32-gcc
