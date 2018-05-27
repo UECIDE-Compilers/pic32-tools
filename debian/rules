@@ -63,6 +63,7 @@ override_dh_auto_build:
 	rm -rf build
 	mkdir -p build
 	tar -C build -zxf ../../downloads/pic32-tools-${DEB_HOST_ARCH}-${VER}.tar.gz
+	find build -name '*\**' -delete
 
 override_dh_auto_clean:
 	rm -rf build
