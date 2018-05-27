@@ -11,7 +11,7 @@
 
 FILE=unknown
 URL=unknown
-VER=143
+VER=143-4
 
 ifeq (${DEB_HOST_ARCH},linux-amd64)
 	URL=https://github.com/chipKIT32/chipKIT-compiler-builds/releases/download/1.43/pic32-tools-143-Linux32-image.tar.gz
